@@ -1,0 +1,6 @@
+{
+  "selauncher": {
+    "component": "SELauncher",
+    "composition": "children"
+  }
+}
