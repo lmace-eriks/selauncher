@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { canUseDOM } from "vtex.render-runtime";
+
+import styles from "./styles.css";
 
 interface SELauncherProps {
 
@@ -13,11 +15,16 @@ const siteEditorKeys = {
 }
 
 const shortcutKeys = {
+  help: 72, // H
   copy: 67 // C
 }
 
+const masterHost = "www.eriksbikeshop.com";
+const masterAdmin = "https://eriksbikeshop.myvtex.com/admin/cms/site-editor";
+
 const SELauncher: StorefrontFunctionComponent<SELauncherProps> = ({ }) => {
   const escapeFlag = useRef(false);
+  const [helpActive, setHelpActive] = useState(false);
 
   useEffect(() => {
     if (!canUseDOM) return;
@@ -35,6 +42,7 @@ const SELauncher: StorefrontFunctionComponent<SELauncherProps> = ({ }) => {
     if (e.keyCode === escapeKey) escapeFlag.current = true;
     if (!escapeFlag.current) return;
 
+    if (e.keyCode === shortcutKeys.help) setHelpActive(!helpActive);
     if (e.keyCode === shortcutKeys.copy) copyPath();
     if (e.keyCode === siteEditorKeys.self) launch("_self");
     if (e.keyCode === siteEditorKeys.blank) launch("_blank");
@@ -54,11 +62,48 @@ const SELauncher: StorefrontFunctionComponent<SELauncherProps> = ({ }) => {
     if (!canUseDOM) return;
     escapeFlag.current = false;
 
-    const pathToEdit = window.location.href.split(".com/")[1];
-    window.open(`https://eriksbikeshop.myvtex.com/admin/cms/site-editor/${pathToEdit}`, destination);
+    const myLocation = window.location;
+    const hostName = myLocation.hostname;
+    const devAdmin = myLocation.origin + "/admin/cms/site-editor";
+
+    const adminHost = hostName === masterHost ? masterAdmin : devAdmin;
+    const pathToEdit = myLocation.pathname;
+
+    window.open(`${adminHost}${pathToEdit}`, destination);
   }
 
-  return <div style={{ display: "none" }} data-info="Site Editor Launcher 1.0.1" />
+  const HelpMenu = () => (
+    <div className={styles.container}>
+      <button onClick={() => setHelpActive(false)} className={styles.closeMenuButton}>X</button>
+      <p className={styles.helpTitle}>ESC Key Tools - Help Menu</p>
+      <ul className={styles.helpList}>
+        <li className={styles.helpListItem}>
+          <div className={styles.keyStroke}>ESC + C:</div>
+          <div className={styles.description}>Copy text from URL after .com to clipboard.</div>
+        </li>
+        <li className={styles.helpListItem}>
+          <div className={styles.keyStroke}>ESC + S:</div>
+          <div className={styles.description}>Open Site Editor for current page in current tab.</div>
+        </li>
+        <li className={styles.helpListItem}>
+          <div className={styles.keyStroke}>ESC + N:</div>
+          <div className={styles.description}>Open Site Editor for current page in new tab.</div>
+        </li>
+        <li className={styles.helpListItem}>
+          <div className={styles.keyStroke}>ESC + H:</div>
+          <div className={styles.description}>Toggle help menu visibility.</div>
+        </li>
+      </ul>
+      <p className={styles.featureRequest}>For any feature requests, please contact<br />your Front End Web Developer.</p>
+    </div>
+  )
+
+  return (
+    <>
+      {helpActive && <HelpMenu />}
+      <div style={{ display: "none" }} data-info="Site Editor Launcher 1.0.2" />
+    </>
+  )
 }
 
 SELauncher.schema = {
