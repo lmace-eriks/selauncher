@@ -55,10 +55,10 @@ const SELauncher: StorefrontFunctionComponent<SELauncherProps> = ({ }) => {
     escapeFlag.current = false;
 
     const pathToEdit = window.location.href.split(".com/")[1];
-    window.open(`/admin/cms/site-editor/${pathToEdit}`, destination);
+    window.open(`https://eriksbikeshop.myvtex.com/admin/cms/site-editor/${pathToEdit}`, destination);
   }
 
-  return <div style={{ display: "none" }} data-info="Site Editor Launcher" />
+  return <div style={{ display: "none" }} data-info="Site Editor Launcher 1.0.1" />
 }
 
 SELauncher.schema = {
